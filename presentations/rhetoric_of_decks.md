@@ -44,7 +44,23 @@ The formula is brutal:
 - Dense text → nothing read
 - Complex charts → confusion, not insight
 
-One idea per slide. One. This is not a guideline. This is the law.
+One idea per slide. One. This is not a guideline. This is the law. Two ideas maximum if they form an inseparable contrast (e.g., "correct interpretation" vs. "wrong interpretation"). But if you find yourself writing "also" or "additionally" on a slide, you need a new slide. The test is simple: can you state the slide's point in one sentence? If you need two sentences, you need two slides.
+
+#### No Wall of Sentences
+
+A "wall of sentences" is what happens when a slide contains multiple prose sentences stacked vertically — three, four, five sentences of running text that could have come from a Word document. This is the single most common failure mode in academic presentations. It signals that the presenter has not done the work of distilling the idea.
+
+What a wall of sentences looks like:
+- "The treatment effect was significant at the 5% level. This suggests that the intervention had a meaningful impact. However, we should note that the confidence interval was wide. Further research is needed to confirm these findings."
+
+That belongs in a paper, not on a slide. On the slide, the equation or the CI plot does the work. The speaker provides the narrative. Text on the slide exists only to *label*, *set up*, or *structure* — never to *explain*.
+
+Acceptable text on slides:
+1. **A short labeled setup** introducing an equation or visual: "From the FOC:", "Step 1:", "Setup:"
+2. **A single concluding line** after the final visual element — at most ONE, and only if it adds information not in the title or visual
+3. **Structured content**: bullets, tables, labeled contrasts, numbered steps
+
+If you catch yourself writing a sentence that narrates what the audience can see, delete it. That sentence belongs in your mouth.
 
 ### Law 3: The Slide Serves the Spoken Word
 
