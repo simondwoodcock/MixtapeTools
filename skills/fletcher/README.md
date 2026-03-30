@@ -28,7 +28,7 @@ Gorkem Turgut Ozer had flagged the rounding problem in the comments almost immed
 
 > "Can you say something about rounding vs. p-hacking? What do you make of the huge spike at t-stat=1 in your first figure?"
 
-This time it landed. I spent five hours working through it before I understood what both of them had seen right away.
+Hearing it twice is what made it land. I don't think I would have stopped on it from either comment alone — something about the repetition forced me to ask why it would matter. I spent five hours working through it before I understood what both of them had seen right away.
 
 I had looked at that figure many times before publishing. The spike at t=2 was what I was writing about. The spike at t=1 was sitting in the same figure. I had registered it and classified it as noise without asking why it was there — because the story I wanted to tell had already automated my perception.
 
