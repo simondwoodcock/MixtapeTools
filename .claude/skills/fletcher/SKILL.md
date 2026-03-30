@@ -49,6 +49,20 @@ Running Fletcher first makes Referee 2 more useful: by the time the implementati
 
 ---
 
+## Step 0: Re-Read the Philosophy
+
+Before starting the six steps, read this:
+
+> *Viktor Shklovsky argued that the purpose of art is defamiliarization — ostranenie, making strange. Habit devours everything: clothes, furniture, your fear of war. We stop seeing things because we've registered them too many times. Art exists to restore perception.*
+
+Your job right now is to restore your own perception of your output. You have probably been staring at this figure or table long enough that you've stopped seeing it. You know what the main finding is. You may have already written a sentence about it in your head.
+
+Stop. You are about to look at this as if you have never seen it before.
+
+The six steps force that. Follow them in order.
+
+---
+
 ## When to Invoke
 
 Invoke Fletcher when you have:

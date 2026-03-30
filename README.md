@@ -53,31 +53,35 @@ Everything else in this repo implements these principles.
 
 ### 1. Referee 2 (Systematic Audit & Replication Protocol)
 
-**Location:** `personas/referee2.md`
+**Location:** [`skills/referee2/`](skills/referee2/) | `personas/referee2.md` (full protocol)
 
-The single most valuable practice I've developed. Referee 2 is a **health inspector for empirical research**—not a vague "be critical" persona, but a systematic audit protocol with five specific audits, cross-language replication, formal referee reports, and a revise & resubmit process.
+Referee 2 is a **health inspector for empirical research** — a systematic five-audit protocol with cross-language replication, formal referee reports, and a revise & resubmit process. It runs after a project is complete, in a **fresh terminal**, by a Claude instance that has never seen the work. The separation is what makes it independent: the Claude that built the pipeline cannot objectively audit it.
 
 **The Five Audits:**
 
 | Audit | What It Does |
 |-------|--------------|
-| **Code Audit** | Scrutinizes for coding errors, missing value handling, merge diagnostics, variable construction |
-| **Cross-Language Replication** | Creates replication scripts in 2 other languages (R/Stata/Python), compares results to 6 decimal places |
-| **Directory Audit** | Checks folder structure, relative paths, naming conventions—is this replication-package ready? |
+| **Code Audit** | Coding errors, missing value handling, merge diagnostics, variable construction |
+| **Cross-Language Replication** | Replication scripts in 2 other languages (R/Stata/Python), results compared to 6 decimal places |
+| **Directory Audit** | Folder structure, relative paths, naming conventions — replication-package ready? |
 | **Output Automation Audit** | Are tables and figures programmatically generated or manually created? |
-| **Econometrics Audit** | Are specifications coherent? Standard errors correct? Identification plausible? |
+| **Econometrics Audit** | Identification strategy, standard errors, fixed effects, parallel trends, first stage |
 
-**Critical Rule:** Referee 2 NEVER modifies author code. It only creates its own replication scripts. The author is the only one who modifies the author's code. This separation ensures the audit is truly independent.
+**Critical Rule:** Referee 2 NEVER modifies author code. It only creates its own replication scripts. Only the author modifies the author's code.
+
+*Referee 2 is one of two complementary audit tools. See below.*
+
+---
 
 ### 2. Fletcher (Own All the Numbers)
 
-**Location:** [`skills/fletcher/`](skills/fletcher/) (essay + guide) | `.claude/skills/fletcher/SKILL.md` (actual skill)
+**Location:** [`skills/fletcher/`](skills/fletcher/) | `.claude/skills/fletcher/SKILL.md` (actual skill)
 
-A Claude Code **skill** — invoke with `/fletcher` — for auditing empirical output before interpretation begins. Named for Jason Fletcher, who identified a rounding artifact in a p-hacking analysis by asking about the spike at t=1 when everyone else was focused on the spike at t=2.
+Fletcher is a **defamiliarization audit for empirical output** — a six-step checklist for interrogating a figure or table before you interpret it. Named for Jason Fletcher, who identified a rounding artifact in a p-hacking analysis by asking about the spike at t=1 when everyone else was focused on the spike at t=2. The spike at t=1 was the tell. It was right there in the figure. Nobody asked about it because the main story had already automated their perception.
 
-The habit: when reviewing output, step back from the main coefficient and ask about something else in the table — the odd pattern, the unexpected sign, the sample size that doesn't add up. More often than you'd think, that's where the problem lives.
+The habit: when reviewing output, step back from the main result and ask about the number no one is explaining — the odd pattern, the unexpected sign, the sample size that doesn't add up.
 
-**The Shklovsky principle:** habit makes perception automatic. You stop seeing your output because you've already decided what it means. Fletcher exists to defamiliarize — to make you see the figure as a stranger would, before your preferred story has automated everything else into background noise.
+**The Shklovsky principle:** Viktor Shklovsky argued that art exists to defamiliarize — to make the stone stony again. Habit makes perception automatic; we stop seeing our output because we've already decided what it means before we looked. Fletcher exists to break that. To make you see the figure as a stranger would, before the story has collapsed everything else into background noise.
 
 **Six steps, each crossed off, ruling at the end:**
 
@@ -92,9 +96,35 @@ The habit: when reviewing output, step back from the main coefficient and ask ab
 
 **Ruling:** CLEAR / CONDITIONAL / HOLD
 
-**Fletcher and Referee 2 are complements, not substitutes.** Referee 2 asks *is this implemented correctly?* Fletcher asks *do you understand what you're looking at?* Fletcher runs when output first appears; Referee 2 runs when the project is complete. Both should be run. See [`skills/fletcher/README.md`](skills/fletcher/README.md) for the full essay and origin story.
-
 **Usage:** `/fletcher path/to/figure-or-table "what I think the main finding is"`
+
+Read the full origin story: [`skills/fletcher/README.md`](skills/fletcher/README.md)
+
+---
+
+### Referee 2 and Fletcher: Complements, Not Substitutes
+
+These two tools address different failure modes at different stages of the research process. **Both should be run. Neither replaces the other.**
+
+| | Referee 2 | Fletcher |
+|---|---|---|
+| **Core question** | *Is this implemented correctly?* | *Do you understand what you're looking at?* |
+| **Failure mode it catches** | Coding errors, bad merges, wrong SEs, non-replicating results | Confirmation focus, unexplained features, misread output |
+| **When it runs** | After the project is complete | When output first appears, before writing begins |
+| **Session** | Fresh terminal — independence is structural | Same session — you need the person closest to the work |
+| **Persona** | Health inspector with a checklist | Mentor at the whiteboard |
+| **Would have caught a merge error?** | Yes | Maybe |
+| **Would have caught the t=1 spike?** | No | Yes |
+
+**Why separate sessions for Referee 2 but not Fletcher?**
+
+Referee 2 needs a fresh session because it's auditing *implementation* — the Claude that built the code will rationalize its own choices. True independence requires structural separation.
+
+Fletcher doesn't need separation because it's auditing *perception* — your own understanding of output you produced. You're the right person to do that, with a structured forcing function to look past what you expect to see.
+
+**The workflow:**
+1. Produce output → `/fletcher` → interpret and write
+2. Complete project → open fresh terminal → `/referee2`
 
 ---
 
