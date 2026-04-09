@@ -206,7 +206,7 @@ A Claude Code **command** — invoke with `/compiledeck` — that embeds the ful
 
 ### 5. TikZ Collision Audit
 
-**Location:** `.claude/skills/tikz/SKILL.md` (actual skill)
+**Location:** [`skills/tikz/`](skills/tikz/) | `.claude/skills/tikz/SKILL.md` (actual skill)
 
 A Claude Code **skill** — invoke with `/tikz path/to/file.tex` — that systematically audits and fixes every visual collision in every TikZ figure in a LaTeX file. Labels sitting on arrows, text inside boxes, arrows crossing each other — found and fixed using measurement, not intuition.
 
