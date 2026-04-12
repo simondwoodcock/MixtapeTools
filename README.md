@@ -138,18 +138,24 @@ My philosophy of slide design, plus a tested prompt for generating Beamer presen
 
 ### 3. Split-PDF Skill (Download, Split, and Deep-Read Papers)
 
-**Location:** [`skills/`](skills/) (human-readable guide) | `.claude/skills/split-pdf/SKILL.md` (actual skill)
+**Location:** [`skills/split-pdf/`](skills/split-pdf/) (human-readable guide) | `.claude/skills/split-pdf/SKILL.md` (actual skill)
 
 A Claude Code **skill** — an invocable `/split-pdf` command that automates the full pipeline for reading academic papers:
 
-1. **Download** the PDF (web search + download, or use a local file)
-2. **Split** into 4-page chunks via PyPDF2
-3. **Read** 3 chunks at a time (~12 pages), pausing between batches
-4. **Write** structured reading notes with detailed extraction
+1. **Acquire** the PDF (web search + download, or use a local file in place)
+2. **Check** for an existing `_text.md` extract or existing splits — offer to reuse
+3. **Split** into 4-page chunks via PyPDF2, stored in a `_build/` directory
+4. **Read** 3 chunks at a time (~12 pages), pausing between batches
+5. **Extract** structured reading notes across 8 dimensions into `notes.md`
+6. **Persist** the final extraction as `<basename>_text.md` alongside the source PDF
 
 **Why not just read the full PDF?** Long PDFs either crash the session ("prompt too long" — unrecoverable) or produce shallow, hallucinated output. Splitting forces Claude to attend carefully to every section and externalizes understanding into markdown notes incrementally.
 
+**Key features:** In-place PDF handling (no centralized `articles/` folder), persistent `_text.md` extracts (skip re-reading on future invocations), split reuse, and an agent isolation protocol that prevents context bloat when other skills call `/split-pdf`.
+
 **Usage:** Type `/split-pdf path/to/paper.pdf` or `/split-pdf "search query for paper"`
+
+Read the full documentation: [`skills/split-pdf/README.md`](skills/split-pdf/README.md)
 
 ### 3b. Beautiful Deck (End-to-End Deck Creation)
 
