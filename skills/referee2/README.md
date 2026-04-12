@@ -4,18 +4,18 @@
 
 ---
 
-## Recommended Order: Fletcher First, Then Referee 2
+## Recommended Order: Blindspot First, Then Referee 2
 
-Before running Referee 2, run `/fletcher` on your key figures and tables.
+Before running Referee 2, run `/blindspot` on your key figures and tables.
 
-Fletcher catches interpretation problems — features of your output you haven't explained, patterns inconsistent with your story, the number you stopped seeing because you already decided what it meant. It runs during analysis, in your working session, at the moment output appears.
+Blindspot catches perception problems — features of your output you haven't explained, problems hiding in plain sight (vices), and opportunities being overlooked (virtues). It runs during analysis, in your working session, at the moment output appears.
 
 Referee 2 catches implementation problems — coding errors, replication failures, bad controls. It runs after the project is complete, in a fresh session.
 
-**Running Fletcher first means that by the time Referee 2 audits the code, the interpretation has already been stress-tested.** A project that passes both is one where the code is correct *and* you understand what it's showing you.
+**Running Blindspot first means that by the time Referee 2 audits the code, the interpretation has already been stress-tested.** A project that passes both is one where the code is correct *and* you understand what it's showing you.
 
 ```
-Produce output → /fletcher → interpret and write → complete project → fresh terminal → /referee2
+Produce output → /blindspot → interpret and write → complete project → fresh terminal → /referee2
 ```
 
 ---
@@ -77,27 +77,27 @@ The workflow mirrors journal peer review:
 
 ---
 
-## Referee 2 and Fletcher: Complements, Not Substitutes
+## Referee 2 and Blindspot: Complements, Not Substitutes
 
 **Both should be run. Neither replaces the other.**
 
-| | Referee 2 | Fletcher |
+| | Referee 2 | Blindspot |
 |---|---|---|
-| **Question** | Is this implemented correctly? | Do you understand what you're looking at? |
+| **Question** | Is this implemented correctly? | Can you see what's in front of you? |
 | **Timing** | After the project is complete, fresh session | When output first appears, before writing |
-| **Persona** | Health inspector with a checklist | Mentor at the whiteboard |
-| **Catches** | Coding errors, replication failures, bad controls | Misinterpretation, confirmation focus, unexplained features |
+| **Persona** | Health inspector with a checklist | Shklovsky — restoring perception |
+| **Catches** | Coding errors, replication failures, bad controls | Overlooked problems (vices) and overlooked opportunities (virtues) |
 | **Would have caught a merge error?** | Yes | Maybe |
 | **Would have caught the t=1 spike?** | No | Yes |
 
-**Why fresh sessions for Referee 2 but not Fletcher:**
+**Why fresh sessions for Referee 2 but not Blindspot:**
 
 Referee 2 requires a fresh terminal because it's auditing implementation — the same Claude that built the code will rationalize its own choices. Independence is structural.
 
-Fletcher runs in the same session because it's auditing perception — you need the person closest to the work, with a structured forcing function to look past what they expect to see.
+Blindspot runs in the same session because it's auditing perception — you need the person closest to the work, with a structured forcing function to look past what they expect to see.
 
 **The workflow:**
-1. Produce output → `/fletcher` → interpret and write
+1. Produce output → `/blindspot` → interpret and write
 2. Complete project → fresh terminal → `/referee2`
 
 ---

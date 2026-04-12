@@ -1,8 +1,16 @@
 # TikZ Collision Audit (`/tikz`)
 
-> **Find and fix every visual collision in every TikZ figure in a LaTeX file — using measurement, not intuition.**
+> **A repair tool for residual TikZ collisions — not a safety net for bad generation.**
 
-`/tikz` is the skill that catches what `pdflatex` doesn't. A Beamer deck can compile with zero warnings and still look wrong: labels sitting on arrows, text bleeding into box edges, Bézier curves passing through other labels, arrows pointing to the wrong node. LaTeX reports none of these. Humans usually miss them on first review. `/tikz` finds them by computing the actual geometry.
+`/tikz` catches what `pdflatex` doesn't: labels sitting on arrows, text bleeding into box edges, Bézier curves passing through other labels, arrows pointing to the wrong node. LaTeX reports none of these. Humans usually miss them on first review. `/tikz` finds them by computing the actual geometry.
+
+## The critical distinction: prevention vs. repair
+
+**`/tikz` is a repair tool.** It runs measurement-based checks on existing TikZ code and fixes what it finds. But it cannot reliably fix diagrams that were never built with measurement in mind — autosized nodes, missing directional keywords, `scale` factors that compress coordinates but not text. These upstream generation problems produce collisions that are structurally unfixable by any audit pass.
+
+**The upstream defense is `/beautiful_deck` Step 4.4**, which writes safe TikZ from the start: explicit node dimensions, coordinate maps, directional keywords on every edge label, canonical templates for common diagram types, and a strict prohibition on `scale` for complex diagrams. When Step 4.4 does its job, `/tikz` has little to find. When Step 4.4 is skipped — or when you're auditing TikZ that was written outside of `/beautiful_deck` — `/tikz` does its best, but the success rate depends entirely on how the TikZ was generated.
+
+**The pipeline**: prevention (Step 4.4) → compile (Step 6) → residual repair (`/tikz`, Step 7).
 
 ## The fundamental rule
 
@@ -102,10 +110,17 @@ Catalog of the collision patterns Scott has seen most often in his own decks:
 
 ## When to use it
 
-- **Always after `/beautiful_deck`** — the skill invokes `/tikz` automatically as part of the visual cleanup step, but you can also re-run it manually after any significant edit to a diagram.
+- **Always after `/beautiful_deck`** — the skill invokes `/tikz` automatically as part of the visual cleanup step (Step 7). Because Step 4.4 now writes safe TikZ from the start, `/tikz` should find few or no issues in new decks. Re-run manually after any significant edit to a diagram.
 - **After any TikZ edit** — adding a new node, changing a bend angle, repositioning a label. Don't trust visual inspection alone; run the math.
 - **Before shipping a deck** — final pre-flight check alongside `/compiledeck`'s zero-warning compile loop.
 - **When a diagram "looks wrong" but you can't say why** — `/tikz` will find the exact measurement causing the discomfort.
+- **On TikZ written outside of `/beautiful_deck`** — legacy diagrams, inherited decks, or hand-written TikZ. These are the cases where `/tikz` works hardest, because the upstream prevention rules (Step 4.4) were not applied. Expect more findings and more iteration.
+
+## Known limitations
+
+- **Cannot fix autosized nodes reliably.** If a `\node` has no explicit `minimum width`/`minimum height`, its rendered dimensions depend on the text content and font — information `/tikz` can only estimate, not compute exactly. The fix is upstream: write explicit dimensions (Step 4.4, Rule 1).
+- **`scale` factor creates invisible collisions.** `scale=0.55` shrinks coordinates but not text. `/tikz` attempts to compensate, but the compensated gap calculations are less reliable than diagrams drawn at intended size. The fix is upstream: never use `scale` on complex diagrams (Step 4.4, Rule 5).
+- **Pass 6 (visual sanity check) is unreliable.** Claude cannot reliably inspect rendered PDFs at the pixel level. Passes 1–5 (measurement-based) are the real defense. Pass 6 is a belt-and-suspenders reminder, not a guarantee.
 
 ## Related skills
 
@@ -114,9 +129,11 @@ Catalog of the collision patterns Scott has seen most often in his own decks:
 
 ## The philosophy
 
-The common failure mode in academic decks is not "I couldn't make this figure" — it's "the figure compiles, looks mostly right, and has one subtle overlap that distracts the audience every time they look at it." Those overlaps are invisible to LaTeX and invisible to the author because they've stared at the diagram for hours. `/tikz` is the second pair of eyes that trusts arithmetic over intuition.
+The common failure mode in academic decks is not "I couldn't make this figure" — it's "the figure compiles, looks mostly right, and has one subtle overlap that distracts the audience every time they look at it." Those overlaps are invisible to LaTeX and invisible to the author because they've stared at the diagram for hours.
 
-Every collision rule in the skill has a formula behind it. Every formula was written down because a prior version of a Scott deck had exactly that collision, found only after the audience saw it. The skill is the accumulated scar tissue of previous deck-polishing sessions, codified so nobody has to make the same mistake twice.
+`/tikz` was originally written as the sole defense against these overlaps. Experience showed that a repair-only approach is insufficient — Claude reads the formulas and *simulates* having done the calculation, but doesn't always execute them rigorously. The breakthrough was recognizing that **prevention is worth ten repair passes**: writing safe TikZ from the start (explicit dimensions, coordinate maps, no `scale`) eliminates most collision classes before `/tikz` ever runs.
+
+The current architecture reflects this: `/beautiful_deck` Step 4.4 is the upstream defense. `/tikz` is the downstream check. Together they catch what either alone would miss. Every collision rule in `/tikz` has a formula behind it. Every formula was written down because a prior version of a Scott deck had exactly that collision, found only after the audience saw it. The skill is the accumulated scar tissue of previous deck-polishing sessions — now paired with generation rules that prevent the same scars from forming in the first place.
 
 ## Full reference
 

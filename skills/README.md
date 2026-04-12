@@ -15,10 +15,10 @@ This directory contains documentation, methodology, and example output for the s
 | Skill | Command | What it does |
 |-------|---------|--------------|
 | [**Referee 2**](referee2/) | `/referee2` | A five-audit systematic review protocol — code correctness, cross-language replication, directory structure, output automation, and econometrics. Runs in a fresh terminal after project completion. Creates independent replication scripts in two additional languages and files a formal referee report with verdict. [See documentation →](referee2/) |
-| [**Fletcher**](fletcher/) | `/fletcher` | A defamiliarization audit for empirical output. Before you interpret a figure or table, Fletcher walks through six steps: list every feature (not just the main result), ask what would generate each one, find the hardest feature to explain, check the sample size, verify the pattern across specs, and confirm you can account for every number. Named for Jason Fletcher. [See the origin story →](fletcher/) |
-| [**Beautiful Deck**](beautiful_deck/) | `/beautiful_deck` | End-to-end beautiful deck creation. Designs an original Beamer `.sty` (or Quarto/Typst style) per audience, restructures content via the Rhetoric of Decks with the pedagogical movement Narrative → Application → Picture → Codeblock → Technical, generates figures code-first, compiles to zero warnings, runs `/tikz` for visual cleanup, and dispatches rhetoric + graphics audit sub-agents. [See documentation →](beautiful_deck/) |
+| [**Blindspot**](blindspot/) | `/blindspot` | A peripheral vision audit for empirical output. Finds what the author cannot see — problems hiding in plain sight (**vices**: the unexplained feature, the convenient absence) and opportunities being overlooked (**virtues**: the unasked question, the unexploited strength). Inspired by Viktor Shklovsky's defamiliarization principle: art exists to make the stone stony again. [See documentation →](blindspot/) |
+| [**Beautiful Deck**](beautiful_deck/) | `/beautiful_deck` | End-to-end beautiful deck creation. Designs an original Beamer `.sty` (or Quarto/Typst style) per audience, restructures content via the Rhetoric of Decks with the pedagogical movement Narrative → Application → Picture → Codeblock → Technical, generates figures code-first, **writes safe TikZ from the start** using explicit node dimensions, coordinate maps, and canonical templates (Step 4.4), compiles to zero warnings, runs `/tikz` for residual collision repair, and dispatches rhetoric + graphics audit sub-agents. The key insight: prevention in Step 4.4 is worth ten repair passes in Step 6. [See documentation →](beautiful_deck/) |
 | [**Compile Deck**](compiledeck/) | `/compiledeck` | The mechanical compile loop — preamble templates, palette reference, and TikZ rules. Called by `/beautiful_deck` for compile mechanics. Use directly when editing an existing deck rather than building from scratch. [See documentation →](compiledeck/) |
-| [**TikZ Audit**](tikz/) | `/tikz` | Find and fix every visual collision in every TikZ figure using measurement, not intuition. Six-pass protocol covering Bézier curve depths, edge-label gap calculations, boundary clearances, and cross-slide consistency. Catches what `pdflatex` misses. Invoked automatically by `/beautiful_deck`. [See documentation →](tikz/) |
+| [**TikZ Audit**](tikz/) | `/tikz` | **A repair tool, not a safety net.** Finds and fixes residual visual collisions in TikZ figures using measurement, not intuition — six-pass protocol covering Bézier curve depths, edge-label gap calculations, boundary clearances, and cross-slide consistency. Catches what `pdflatex` misses. But it cannot reliably fix diagrams that were never built with measurement in mind. The upstream defense is `/beautiful_deck` Step 4.4, which writes safe TikZ from the start. `/tikz` is the downstream check. [See documentation →](tikz/) |
 | [**Split-PDF**](split-pdf/) | `/split-pdf` | Downloads and deep-reads academic PDFs without crashing the session. Splits into 4-page chunks, reads in batches of ~12 pages, writes structured notes. [See full walkthrough →](split-pdf/) |
 | [**New Project**](newproject/) | `/newproject` | Scaffolds a new research project with standard directory structure, CLAUDE.md template, and documented README. [See documentation →](newproject/) |
 
@@ -59,7 +59,7 @@ Each skill is a markdown file at `.claude/skills/<name>/SKILL.md`. It has a smal
 .claude/skills/
 ├── referee2/
 │   └── SKILL.md           # The instructions Claude follows
-├── fletcher/
+├── blindspot/
 │   └── SKILL.md           # The instructions Claude follows
 ├── compiledeck/
 │   ├── SKILL.md           # The instructions Claude follows
@@ -75,8 +75,8 @@ Each skill is a markdown file at `.claude/skills/<name>/SKILL.md`. It has a smal
 skills/
 ├── referee2/
 │   └── README.md          # Five audits, the R&R process, how it works
-├── fletcher/
-│   └── README.md          # Full origin essay — the t=1 spike story, Shklovsky
+├── blindspot/
+│   └── README.md          # Shklovsky, the vice/virtue grid, origin story
 ├── compiledeck/
 │   └── README.md          # The Rhetoric of Decks, palettes, TikZ rules
 ├── split-pdf/

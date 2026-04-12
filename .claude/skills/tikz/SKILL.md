@@ -1,19 +1,37 @@
 ---
 name: tikz
-description: Audit and fix TikZ visual collisions in any .tex file. Use when labels overlap arrows, text sits on boxes, or arrows cross each other. Applies mathematical gap calculations and Bézier depth formulas — no eyeballing.
+description: Audit and fix residual TikZ visual collisions in any .tex file. A downstream repair tool — not a safety net. The upstream defense is /beautiful_deck Step 4.4, which writes safe TikZ from the start. Use /tikz when labels overlap arrows, text sits on boxes, or arrows cross each other. Applies mathematical gap calculations and Bézier depth formulas — no eyeballing.
 allowed-tools: Bash(pdflatex*), Bash(grep*), Bash(ls*), Read, Edit, Glob
 argument-hint: [path/to/file.tex]
 ---
 
 # TikZ Collision Audit
 
-**Purpose**: Find and fix every visual collision in every TikZ figure in a given `.tex` file. Labels on arrows, text inside boxes, arrows crossing arrows — this skill catches them all using measurement, not intuition.
+**Purpose**: Find and fix residual visual collisions in TikZ figures in a given `.tex` file. Labels on arrows, text inside boxes, arrows crossing arrows — this skill catches them using measurement, not intuition.
 
 **The fundamental rule**: Claude cannot reliably eyeball where TikZ elements land. All placement must be verified mathematically before declaring it safe.
 
 ---
 
-## Step 1: Identify the file
+## Critical context: this is a repair tool, not the primary defense
+
+`/tikz` runs **after** TikZ has been generated. It audits existing code and fixes what it finds. But it cannot reliably fix diagrams that were never built with measurement in mind.
+
+**The upstream defense is `/beautiful_deck` Step 4.4**, which writes safe TikZ from the start:
+
+1. Every `\node` declares explicit `minimum width` and `minimum height`
+2. Every edge label carries a directional keyword (`above`, `below`, etc.)
+3. A coordinate map comment block precedes every `tikzpicture`
+4. Standard diagram types use canonical safe templates
+5. `scale` is never used on complex diagrams
+
+**When Step 4.4 was applied**: `/tikz` should find few or no issues. Run it as a check.
+
+**When Step 4.4 was NOT applied** (legacy TikZ, hand-written diagrams, inherited decks): `/tikz` does its best, but expect more findings, more iteration, and lower reliability on autosized nodes and scaled diagrams.
+
+---
+
+## Step 1: Identify the file and run the pre-check
 
 If the user specified a file, use it. If not, ask. Then:
 
@@ -22,6 +40,31 @@ grep -n "tikzpicture\|begin{frame}\|node\|draw\|bend\|foreach" [file].tex | head
 ```
 
 Get a sense of scope: how many TikZ diagrams, how many frames, how many arrows.
+
+### Pre-check: were the generation rules followed?
+
+Before running the six audit passes, quickly assess whether the TikZ was written safely:
+
+```bash
+# Check for autosized nodes (no minimum width/height)
+grep -n "\\\\node" [file].tex | grep -v "minimum"
+```
+
+```bash
+# Check for scale on tikzpicture
+grep -n "scale=" [file].tex
+```
+
+```bash
+# Check for coordinate map comments
+grep -n "% Coordinate map\|% Node map\|% Layout" [file].tex
+```
+
+**If autosized nodes are widespread**: warn that repair reliability will be lower. The fix is upstream — add explicit dimensions to every node. Consider doing that first before running the audit passes.
+
+**If `scale` is used on a complex diagram**: warn that coordinates are compressed but text is not. Gap calculations in Passes 2–5 must compensate for the scale factor, but this compensation is fragile. The better fix is upstream: redesign at intended size.
+
+**If no coordinate map exists**: the audit will take longer because spatial relationships must be reverse-engineered from the code rather than read from a plan.
 
 ---
 
@@ -91,6 +134,10 @@ Estimate label width using character counts:
 | `\normalsize`  | 0.18 cm   |
 | Bold           | +10%      |
 
+**Known limitation**: these estimates break down for math mode (`$\beta$` is wider than 1 character), `\textbf` content, multi-word labels, and anything non-ASCII. When in doubt, overestimate width by 20%.
+
+**If `scale` is in effect**: multiply the usable space by the scale factor, but leave the label width estimate at native size. This is the core of the `scale` problem — coordinates shrink, text does not.
+
 If **estimated label width > usable space**: guaranteed collision. Fix: move above/below, or shorten text, or increase node spacing.
 
 **The most common fix** for labels that exceed the gap: break the label out as a standalone `\node` positioned above the arrow midpoint — clear of both boxes — rather than as an inline edge label.
@@ -111,12 +158,12 @@ Every arrow label must carry a directional keyword. Any `node[...]` on an arrow 
 
 For every `\node`, `\fill`, `\draw` circle/rectangle: compute the boundary. Any text within 0.4cm of a shape edge is a collision.
 
-**Circles**: center `(cx, cy)`, radius `r` → boundary from `cy − r` to `cy + r`  
+**Circles**: center `(cx, cy)`, radius `r` → boundary from `cy − r` to `cy + r`
 **Rectangles/boxes**: bottom-left `(x,y)`, width `w`, height `h` → top edge at `y + h`
 
 If a label coordinate puts it inside or touching a shape boundary — move it 0.4cm outside.
 
-**Note on `scale`**: `scale=0.8` shrinks coordinates but NOT text. A 2 cm gap becomes 1.6 cm, but a `\small` label stays `\small`. Recalculate all gaps accounting for scale.
+**Note on `scale`**: `scale=0.8` shrinks coordinates but NOT text. A 2 cm gap becomes 1.6 cm, but a `\small` label stays `\small`. Recalculate all gaps accounting for scale. **If the diagram uses `scale` on a complex figure, flag this to the user as an upstream problem — the reliable fix is to redesign at intended size, not to compensate in the audit.**
 
 ---
 
@@ -140,13 +187,24 @@ Also check:
 
 ---
 
-### Pass 6: Open the PDF and visually confirm
+### Pass 6: Debug bounding-box verification
 
-```bash
-open [file].pdf
+**Do NOT attempt to visually inspect the PDF by "eyeballing."** Claude cannot reliably see TikZ collisions in rendered PDFs. Instead, use a debug bounding-box approach:
+
+1. **Temporarily add red debug outlines** around every node to make bounding boxes structurally visible:
+
+```latex
+% DEBUG — add to preamble temporarily, remove before shipping
+\tikzset{every node/.append style={draw=red, very thin}}
 ```
 
-Scroll through every slide with a TikZ diagram. Trust your eyes for crowding, not just the math. What fits mathematically can still feel cramped. If it looks wrong, it is wrong.
+2. **Compile and inspect**: with red outlines, overlapping bounding boxes are visible as overlapping red rectangles. This makes collisions structurally obvious rather than visually estimated.
+
+3. **For each red-box overlap found**: go back to the source, fix the coordinates or dimensions, remove the debug line, and recompile.
+
+4. **Remove the debug line** before declaring the audit complete. The debug outlines are a diagnostic tool, not a permanent addition.
+
+This replaces the earlier instruction to "open the PDF and visually confirm." The debug-outline method catches the same problems but does not depend on Claude's unreliable ability to interpret rendered PDF geometry.
 
 ---
 
@@ -174,6 +232,20 @@ That count is how many diagrams need a clean bill of health.
 
 ---
 
+## Known limitations
+
+These are the cases where `/tikz` is least reliable. When you encounter them, the better fix is almost always upstream (rewrite the TikZ safely) rather than downstream (try to repair it).
+
+| Limitation | Why it's hard | Upstream fix |
+|---|---|---|
+| **Autosized nodes** (no `minimum width`/`minimum height`) | Rendered dimensions depend on text content and font — `/tikz` can only estimate, not compute exactly | Add explicit dimensions (Step 4.4, Rule 1) |
+| **`scale` on complex diagrams** | Coordinates shrink but text does not; gap calculations require fragile compensation | Redesign at intended size (Step 4.4, Rule 5) |
+| **Math-mode label widths** | `$\hat{\beta}_{it}$` is wider than character-count × width/char suggests | Overestimate by 20–30% or measure with a test compile |
+| **Nested `tikzpicture` environments** | Coordinate systems interact unpredictably | Flatten into a single environment |
+| **`\foreach` loops generating many nodes** | Gap calculations must be done per-iteration; easy to miss one | Write explicit nodes for small counts; check loop bounds for large counts |
+
+---
+
 ## Common collision patterns and fast fixes
 
 | Pattern | Symptom | Fix |
@@ -182,6 +254,7 @@ That count is how many diagrams need a clean bill of health.
 | Step 1 / Step 2 labels on flow diagrams | Labels overlap box text | Place labels above the arrow band, not as edge labels |
 | Diagonal arrow label at `below right` | Label lands inside another box | Use `pos=0.55` + compute landing position |
 | Return curve crossing vertical arrow | Arrows intersect visually | Reverse bend direction (`bend left` ↔ `bend right`) |
-| Scale mismatch | Text large, gaps small | Redesign at intended size; avoid `scale` on complex diagrams |
+| Scale mismatch | Text large, gaps small | **Redesign at intended size; do not use `scale` on complex diagrams** |
 | Slope label on regression line | Label sits on the line | Use `node[anchor=west]` at a point 0.3cm off the line end |
 | `\\` inside `\textcolor{}` | Hbox overflow | Break into two separate `\textcolor` calls on separate lines |
+| Curve labels at right endpoints colliding with brace annotations | Labels horizontally adjacent at similar y | Move curve labels to different x position, or use a legend in the text column instead |

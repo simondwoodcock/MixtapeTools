@@ -73,57 +73,53 @@ Referee 2 is a **health inspector for empirical research** — a systematic five
 
 ---
 
-### 2. Fletcher (Own All the Numbers)
+### 2. Blindspot (Make the Stone Stony Again)
 
-**Location:** [`skills/fletcher/`](skills/fletcher/) | `.claude/skills/fletcher/SKILL.md` (actual skill)
+**Location:** [`skills/blindspot/`](skills/blindspot/) | `.claude/skills/blindspot/SKILL.md` (actual skill)
 
-Fletcher is a **defamiliarization audit for empirical output** — a six-step checklist for interrogating a figure or table before you interpret it. Named for Jason Fletcher, who identified a rounding artifact in a p-hacking analysis by asking about the spike at t=1 when everyone else was focused on the spike at t=2. The spike at t=1 was the tell. It was right there in the figure. Nobody asked about it because the main story had already automated their perception.
+Blindspot is a **peripheral vision audit for empirical output** — a structured protocol for finding what the author cannot see. Problems hiding in plain sight (**vices**) and opportunities being overlooked (**virtues**).
 
-The habit: when reviewing output, step back from the main result and ask about the number no one is explaining — the odd pattern, the unexpected sign, the sample size that doesn't add up.
+**The Shklovsky principle:** Viktor Shklovsky, the Soviet literary theorist, argued that art exists to restore perception. A man who walks barefoot up a mountain eventually cannot feel his feet. Art exists to make the stone stony again. Research has the same problem: by the time you've spent months on a paper, the main finding has collapsed your attention, and everything else — the spike at t=1, the missing subgroup, the heterogeneity richer than the average — has become invisible.
 
-**The Shklovsky principle:** Viktor Shklovsky argued that art exists to defamiliarize — to make the stone stony again. Habit makes perception automatic; we stop seeing our output because we've already decided what it means before we looked. Fletcher exists to break that. To make you see the figure as a stranger would, before the story has collapsed everything else into background noise.
+Blindspot makes the stone stony again.
 
-**Six steps, each crossed off, ruling at the end:**
+**The Blindspot Grid — four quadrants, two vices and two virtues:**
 
-| Step | Question |
-|------|----------|
-| **1. List everything** | What features are visible — not just the main result? |
-| **2. What would generate this?** | For each feature: what could cause it, including mundane explanations? |
-| **3. Find the hardest one** | Which feature is most difficult to explain under your preferred story? |
-| **4. Own the sample size** | Does N make sense? What dropped? |
-| **5. Check the pattern** | Across specs, subgroups, time — does it cohere? |
-| **6. The ownership test** | If someone asked about any number, do you have an answer? |
+|  | What's there but unseen | What's absent but unnoticed |
+|---|---|---|
+| **Problems** | **Vice 1: The Unexplained Feature** — a spike, a sign flip, a sample-size drop nobody asked about | **Vice 2: The Convenient Absence** — a robustness check never run, a subgroup never examined, a dog that didn't bark |
+| **Opportunities** | **Virtue 1: The Unasked Question** — heterogeneity richer than the average, a mechanism visible in the data but absent from the hypothesis | **Virtue 2: The Unexploited Strength** — an identification argument stronger than the paper claims, a falsification test that would crush the main objection |
 
 **Ruling:** CLEAR / CONDITIONAL / HOLD
 
-**Usage:** `/fletcher path/to/figure-or-table "what I think the main finding is"`
+**Usage:** `/blindspot path/to/figure-or-table "what I think the main finding is"`
 
-Read the full origin story: [`skills/fletcher/README.md`](skills/fletcher/README.md)
+Read the full documentation: [`skills/blindspot/README.md`](skills/blindspot/README.md)
 
 ---
 
-### Referee 2 and Fletcher: Complements, Not Substitutes
+### Referee 2 and Blindspot: Complements, Not Substitutes
 
 These two tools address different failure modes at different stages of the research process. **Both should be run. Neither replaces the other.**
 
-| | Referee 2 | Fletcher |
+| | Referee 2 | Blindspot |
 |---|---|---|
-| **Core question** | *Is this implemented correctly?* | *Do you understand what you're looking at?* |
-| **Failure mode it catches** | Coding errors, bad merges, wrong SEs, non-replicating results | Confirmation focus, unexplained features, misread output |
+| **Core question** | *Is this implemented correctly?* | *Can you see what's in front of you?* |
+| **Failure mode it catches** | Coding errors, bad merges, wrong SEs, non-replicating results | Overlooked problems (vices) and overlooked opportunities (virtues) |
 | **When it runs** | After the project is complete | When output first appears, before writing begins |
 | **Session** | Fresh terminal — independence is structural | Same session — you need the person closest to the work |
-| **Persona** | Health inspector with a checklist | Mentor at the whiteboard |
+| **Persona** | Health inspector with a checklist | Shklovsky — restoring perception |
 | **Would have caught a merge error?** | Yes | Maybe |
 | **Would have caught the t=1 spike?** | No | Yes |
 
-**Why separate sessions for Referee 2 but not Fletcher?**
+**Why separate sessions for Referee 2 but not Blindspot?**
 
 Referee 2 needs a fresh session because it's auditing *implementation* — the Claude that built the code will rationalize its own choices. True independence requires structural separation.
 
-Fletcher doesn't need separation because it's auditing *perception* — your own understanding of output you produced. You're the right person to do that, with a structured forcing function to look past what you expect to see.
+Blindspot doesn't need separation because it's auditing *perception* — your own understanding of output you produced. You're the right person to do that, with a structured forcing function to look past what you expect to see.
 
 **The workflow:**
-1. Produce output → `/fletcher` → interpret and write
+1. Produce output → `/blindspot` → interpret and write
 2. Complete project → open fresh terminal → `/referee2`
 
 ---
@@ -254,7 +250,7 @@ MixtapeTools/
 ├── workflow.md               # How I use Claude Code for research (START HERE)
 ├── skills/                   # Human-readable guides to Claude Code skills
 │   ├── README.md            # What skills are, how to use them, how to install
-│   ├── fletcher/            # Fletcher: defamiliarization audit for output
+│   ├── blindspot/           # Blindspot: peripheral vision audit for output
 │   │   └── README.md        # Full essay, origin story, six steps
 │   ├── split-pdf/           # Documentation and examples for the split-pdf skill
 │   │   └── README.md        # Detailed guide with methodology and examples
@@ -267,8 +263,8 @@ MixtapeTools/
 │   │   ├── compiletex.md    # /compiletex — Compile LaTeX, report errors/warnings
 │   │   └── newproject.md    # /newproject — Scaffold new research project
 │   └── skills/
-│       ├── fletcher/         # Skill: own all the numbers
-│       │   └── SKILL.md     # Instructions Claude follows (invoke with /fletcher)
+│       ├── blindspot/        # Skill: make the stone stony again
+│       │   └── SKILL.md     # Instructions Claude follows (invoke with /blindspot)
 │       ├── tikz/             # Skill: audit and fix TikZ visual collisions
 │       │   └── SKILL.md     # Instructions Claude follows (invoke with /tikz)
 │       ├── split-pdf/        # Skill: download, split, and deep-read PDFs
