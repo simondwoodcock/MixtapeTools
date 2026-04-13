@@ -336,6 +336,47 @@ After drafting the full deck, walk through it and rate each slide's MB (marginal
 
 **Exception: deliberate jump scares.** A sudden spike in density for rhetorical effect — a dense regression table, a provocative claim, a complex diagram. These must be INTENTIONAL. One or two per deck max.
 
+### 4.4 TikZ Generation Defaults — Write Safe TikZ From the Start
+
+These rules exist because `/tikz` (Step 6) is a repair tool, not a safety net. It can catch remaining collisions, but it cannot reliably fix diagrams that were never built with measurement in mind. Safe generation is the defense; `/tikz` is the check.
+
+**Rule 1 — Always set explicit node dimensions.** Every `\node` must declare `minimum width` and `minimum height`. Never let TikZ autosize a box. Autosized boxes make arrow endpoints unpredictable and cause downstream collisions that `/tikz` cannot reliably repair. Example: `\node[draw, minimum width=3cm, minimum height=1cm] (A) {Label};`
+
+**Rule 2 — Every edge label must carry a directional keyword.** Any `node[...]` placed on an arrow without `above`, `below`, `left`, `right`, `sloped`, `anchor=`, `pos=`, or `midway` will render ON the arrow line. This is never what you want. No exceptions.
+
+**Rule 3 — Write a coordinate map comment before every tikzpicture.** Before the first `\node`, write a commented block listing every node name, its coordinates, and its intended dimensions. This forces spatial planning before drawing and makes `/tikz` audit passes faster. Example:
+
+```latex
+% Coordinate map:
+% (A) at (0,0)  — 3cm x 1cm — "Start"
+% (B) at (4,0)  — 3cm x 1cm — "End"
+% Arrow: A -> B, label "Step 1" above
+```
+
+**Rule 4 — Use canonical templates for the three standard diagram types.** Rather than writing from scratch each time, start from these safe skeletons:
+
+- *DAG (causal diagram):* nodes in a grid with `circle, minimum size=0.8cm`, arrows with `above` or `below` labels, bend angles never exceeding 30 degrees.
+- *Flow chart:* nodes with explicit `minimum width=3.5cm, minimum height=1cm, text width=3cm, align=center`, vertical spacing of at least 1.5cm between node centers, labels always as standalone `\node` above arrow midpoints rather than inline edge labels.
+- *RDD threshold diagram:* x-axis as a plain `\draw` line, threshold as a `\draw[dashed]` vertical, score dots as `\filldraw` circles with labels placed `above` or `below` with explicit `yshift`.
+
+**Rule 5 — Never use `scale` on a complex diagram.** `scale` shrinks coordinates but not text, creating invisible collisions where the math looks fine but the rendered output is broken. If a diagram is too large, redesign the coordinate layout at the intended size.
+
+**Rule 6 — Never define parameterized TikZ styles inside a Beamer frame.** In Beamer, `#` inside a frame body is consumed by the frame's argument parser before TikZ sees it, causing "Illegal parameter number" errors. These errors cascade through the entire compile and resist all downstream fixes (`##1`, `[fragile]`, `\catcode` hacks — none work reliably).
+
+The fix: define ALL parameterized styles in the preamble using `\tikzset{}`:
+
+```latex
+% In the preamble — BEFORE \begin{document}:
+\tikzset{
+  mybox/.style={rectangle, draw=charcoal, thick, fill=lightbg,
+                minimum width=3.5cm, minimum height=1cm,
+                align=center, font=\small},
+  myarrow/.style={->, thick, #1},
+}
+```
+
+Inside frames, USE the styles but never DEFINE them with `#1`. This is not optional — it is a hard constraint of the Beamer/TikZ interaction. The workarounds (`##1`, `[fragile]`) are themselves fragile and create new failure modes.
+
 ---
 
 ## Step 5: The Compile Loop — ZERO TOLERANCE for Warnings
@@ -393,6 +434,21 @@ Then, **in this order**:
    open <deck>.pdf
    ```
    Scroll through. Does every slide look clean? Are there any visual glitches you can't attribute to a specific warning? These are the silent failures — continue to Steps 6–8 to catch them.
+
+### The circuit breaker — do not spiral
+
+**If you have attempted 3 different approaches to fix the same compile error and it is not resolved, STOP.** Do not try a fourth approach. Do not keep editing and recompiling in a loop. Instead:
+
+1. **Stop editing the .tex file.**
+2. **Tell the user exactly what error you are seeing** — quote the log line.
+3. **List the 3 approaches you tried and why each failed.**
+4. **Ask the user how to proceed.**
+
+The cost of stopping to ask is 2 minutes. The cost of spiraling is an hour of edits that make the file progressively worse. Every failed fix introduces new problems that obscure the original error. After 3 attempts, the file is harder to fix than it was before you started. The user can diagnose the root cause, suggest a different approach, or decide to simplify the slide.
+
+**What counts as "the same error":** any error that persists at the same line (or moves to a nearby line) after your fix. "Illegal parameter number" that moves from line 568 to line 572 after your edit is the same error. An Overfull that appears on a different slide after you fixed the first one is a new error — reset the counter.
+
+**This rule overrides "recompile until clean."** Zero tolerance for warnings is the goal, but zero tolerance does not mean infinite attempts. It means: fix what you can fix, and ask for help on what you cannot.
 
 ### The zero-tolerance rule applies at every checkpoint
 
