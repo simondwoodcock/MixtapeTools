@@ -183,13 +183,47 @@ ax.text(x, box_mid_y + 0.15, 'Title\nLine 2', va='bottom', ...)  # grows UP
 ax.text(x, box_mid_y - 0.15, r'$math$',       va='top', ...)     # grows DOWN
 ```
 
-### Pass 5: Everything else
+### Pass 5: Margin spacing and everything else
 
+**THE MARGIN RULE (mandatory):** Every pair of distinct visual objects — labels, arrows, boxes, axis lines, tick marks, curve endpoints — must have **visible margin space** between them. No object should touch or visually collide with another. Minimum clearances:
+
+| Object pair | Minimum clearance |
+|---|---|
+| Label ↔ label | 0.3cm |
+| Label ↔ axis line | 0.3cm |
+| Label ↔ arrow | 0.3cm |
+| Arrow origin ↔ box edge | 0.15cm |
+| Label ↔ drawn shape boundary | 0.4cm (see Pass 4) |
+| Any object ↔ slide edge | 0.5cm |
+
+When two labels would overlap or touch at their intended positions, move one of them — offset it, anchor it differently, or shorten the text. **Never allow two objects to share the same visual space.** This rule catches the most common TikZ errors: labels sitting on axis lines, $\mu$ markers overlapping x-axis descriptions, arrow origins crowding box edges.
+
+Additional checks:
 - Multi-line nodes have `align=center`?
 - No nodes clipped by slide edges (0.5cm margin)?
 - If scaled: nodes scaled too, not just coordinates?
 - Arrow colors and stealth sizes consistent?
 - No two labels overlap?
+
+### Pass 5b: Plotted curves (normal distributions, arbitrary functions)
+
+**Problem this solves**: Labels, boxes, arrows, and other objects placed near plotted curves (e.g., `\draw plot` with mathematical functions) that overlap because the curve's position was never calculated. TikZ `plot` commands generate curves that the compiler renders but never checks for collisions. You must calculate curve positions yourself.
+
+**The rule**: For every plotted curve, compute its y-value at every x-coordinate where another object exists. Verify clearance.
+
+**For normal/Gaussian curves** of the form `plot ({A*\x}, {B + C*exp(-\x*\x/2)})`:
+- Peak is at x=0: `y_peak = B + C`
+- At any TikZ x-coordinate X: `x_norm = X / A`, then `y = B + C * exp(-x_norm^2 / 2)`
+- Every label, box edge, or arrow within the x-domain of the curve must clear the computed y-value by at least **0.3cm**
+
+**Example**: Curve `plot ({1.5*\x}, {0.3 + 2.0*exp(-\x*\x/2)})`:
+- Peak: y = 0.3 + 2.0 = 2.3
+- At x=1.5 (one SD): y = 0.3 + 2.0*0.607 = 1.51
+- At x=3.0 (two SD): y = 0.3 + 2.0*0.135 = 0.57
+- A label at y=3.0 near x=0 clears the peak by 0.7 ✓
+- A box with bottom edge at y=3.6 clears the peak by 1.3 ✓
+
+**Common failure**: Setting amplitude too high so the curve peak penetrates nearby boxes, or placing labels at y-positions that look clear in your head but sit inside the curve. Always compute, never eyeball.
 
 ### Pass 6: Open the PDF and visually confirm
 

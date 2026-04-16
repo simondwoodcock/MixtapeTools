@@ -44,7 +44,23 @@ The formula is brutal:
 - Dense text → nothing read
 - Complex charts → confusion, not insight
 
-One idea per slide. One. This is not a guideline. This is the law.
+One idea per slide. One. This is not a guideline. This is the law. Two ideas maximum if they form an inseparable contrast (e.g., "correct interpretation" vs. "wrong interpretation"). But if you find yourself writing "also" or "additionally" on a slide, you need a new slide. The test is simple: can you state the slide's point in one sentence? If you need two sentences, you need two slides.
+
+#### No Wall of Sentences
+
+A "wall of sentences" is what happens when a slide contains multiple prose sentences stacked vertically — three, four, five sentences of running text that could have come from a Word document. This is the single most common failure mode in academic presentations. It signals that the presenter has not done the work of distilling the idea.
+
+What a wall of sentences looks like:
+- "The treatment effect was significant at the 5% level. This suggests that the intervention had a meaningful impact. However, we should note that the confidence interval was wide. Further research is needed to confirm these findings."
+
+That belongs in a paper, not on a slide. On the slide, the equation or the CI plot does the work. The speaker provides the narrative. Text on the slide exists only to *label*, *set up*, or *structure* — never to *explain*.
+
+Acceptable text on slides:
+1. **A short labeled setup** introducing an equation or visual: "From the FOC:", "Step 1:", "Setup:"
+2. **A single concluding line** after the final visual element — at most ONE, and only if it adds information not in the title or visual
+3. **Structured content**: bullets, tables, labeled contrasts, numbered steps
+
+If you catch yourself writing a sentence that narrates what the audience can see, delete it. That sentence belongs in your mouth.
 
 ### Law 3: The Slide Serves the Spoken Word
 
@@ -193,6 +209,8 @@ Not:
 4. Here's my analysis
 5. Here's my finding (finally)
 
+**Exception for teaching:** When the pedagogical goal is for students to understand the *reasoning*, not just the *conclusion*, the pyramid inverts. You walk through the logic step by step and arrive at the result together. The student who sees "OLS is BLUE" on slide 2 and then watches you prove it has a fundamentally different learning experience from the student who works through the proof and discovers the result. Both are valid. Context determines which is appropriate.
+
 ### The Opening
 
 The first slide after your title is the most important. It must:
@@ -219,7 +237,7 @@ The last slide lingers. It determines what people remember.
 
 Bad closings:
 - "Questions?" (lazy, generic)
-- Summary slides repeating everything (insulting)
+- Summary slides repeating everything verbatim (redundant in short talks; appropriate in lectures)
 - Thank you slides (wasted real estate)
 
 Good closings:
@@ -244,11 +262,13 @@ Not all information is equal. Your visual design must reflect this:
 
 If everything is emphasized, nothing is emphasized.
 
-### Bullets Are a Confession of Defeat
+### Bullets Are a Default, and Defaults Are Dangerous
 
-Bullet points are the default, and defaults are dangerous. A list of bullets says "I couldn't figure out the relationship between these ideas, so I'm just listing them."
+Bullet points are the most common slide structure in academia. That alone should make you suspicious. A list of bullets *can* mean "I couldn't figure out the relationship between these ideas, so I'm just listing them."
 
-Sometimes a list is right. When you have genuinely parallel items of equal weight, bullets work. But usually, there's a structure hiding in your bullets:
+But genuinely parallel items of equal weight — assumptions for a theorem, properties of an estimator, a checklist of conditions — are what bullets were designed for. The failure is not using bullets. The failure is using bullets without asking whether a better structure exists.
+
+Usually, there's a structure hiding in your bullets:
 
 - A sequence (first, then, finally)
 - A contrast (on one hand, on the other)
@@ -295,6 +315,16 @@ What to do instead:
 - Consider whether you need the full table, or just the key results visualized
 
 If you can't explain what the chart proves in one sentence, the chart is too complex.
+
+### Mathematical Content
+
+Equations are visual elements. They follow the same rules as charts: one message per equation display, label what matters, remove what doesn't advance the argument.
+
+Principles for mathematical slides:
+- **One equation per conceptual step.** If you're deriving a result, each algebraic manipulation should be its own slide or its own clearly separated block. Don't show six lines of algebra simultaneously.
+- **Annotate the key term.** If an equation has five terms but the insight lives in one of them, use color, boxing, or an arrow to direct attention. The audience should not have to parse the entire expression to find your point.
+- **Align related equations.** When showing a sequence of expressions (e.g., expanding a sum, applying an operator), align on the equals sign or the operator that changes. Misaligned equations force the eye to hunt for what changed.
+- **Name your objects.** Don't assume the audience tracks notation across slides. A brief label ("where $\bar{x}$ is the sample mean") costs almost nothing and prevents the cascading confusion of lost notation.
 
 ---
 
@@ -387,14 +417,16 @@ For research presentations:
 
 ### Teaching Decks
 
-When teaching, the rules shift:
+Teaching decks deserve special attention because the audience constraints are fundamentally different from seminar or pitch contexts.
 
-- **Brevity < Clarity**: Don't compress at the cost of understanding
-- **Repetition is allowed**: Learning requires revisiting concepts
-- **Show the reasoning**: Don't just show conclusions; show how you got there
-- **Pause for questions**: Teaching is dialogue, not broadcast
+**Students are not peers.** They are encountering your ideas for the first time. The cognitive load budget is smaller per idea, and the cost of confusion is higher. The core rules still apply — one idea per slide, no wall of sentences, titles are assertions — but the implementation shifts:
 
-The teaching deck sacrifices efficiency for comprehension.
+- **More labeled setups are needed.** "From the definition of variance:", "Applying the expectation operator:", "Step 3 of 4:" — these signposts are not clutter in a teaching deck. They are load-bearing structure.
+- **Roadmap slides earn their place.** In a seminar, an agenda slide with eight items is overload. In a 75-minute lecture, a roadmap slide that says "We are here" helps students who got lost re-orient. Use them at transitions.
+- **The MB/MC calculus shifts.** A recap slide has near-zero marginal benefit in a seminar (the audience already knows). In a teaching deck, recap slides have high marginal benefit because repetition is how learning works. The optimal deck for teaching is less compressed than the optimal deck for persuasion.
+- **Worked examples are content, not filler.** Showing the algebra step by step is not violating "one idea per slide." The idea *is* the derivation. Each step can be its own slide if needed.
+- **Brevity < Clarity**: Don't compress at the cost of understanding.
+- **Show the reasoning**: Don't just show conclusions; show how you got there.
 
 ### Working Decks (for collaborators)
 

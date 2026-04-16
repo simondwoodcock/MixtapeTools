@@ -41,7 +41,9 @@
 
 ---
 
-### `deck_generation_prompt.md` — The Prompt
+### `deck_generation_prompt.md` — The Prompt (now also a skill: `/beautiful_deck`)
+
+> **This prompt is now available as a Claude Code skill.** Invoke `/beautiful_deck` instead of pasting the prompt. See [`skills/beautiful_deck/`](../skills/beautiful_deck/) for documentation. The skill codifies the full pipeline: audience triage, original theme design, Narrative → Application → Picture → Codeblock → Technical sequencing, code-first figure generation, zero-warning compile loop, `/tikz` visual cleanup, and rhetoric + graphics audit sub-agents. The prompt below is preserved here as reference for the philosophy behind the skill.
 
 **What it is:** A tested prompt for generating Beamer presentations with Claude Code, including an iterative multi-agent review process.
 

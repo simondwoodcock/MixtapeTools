@@ -53,23 +53,78 @@ Everything else in this repo implements these principles.
 
 ### 1. Referee 2 (Systematic Audit & Replication Protocol)
 
-**Location:** `personas/referee2.md`
+**Location:** [`skills/referee2/`](skills/referee2/) | `personas/referee2.md` (full protocol)
 
-The single most valuable practice I've developed. Referee 2 is a **health inspector for empirical research**—not a vague "be critical" persona, but a systematic audit protocol with five specific audits, cross-language replication, formal referee reports, and a revise & resubmit process.
+Referee 2 is a **health inspector for empirical research** — a systematic five-audit protocol with cross-language replication, formal referee reports, and a revise & resubmit process. It runs after a project is complete, in a **fresh terminal**, by a Claude instance that has never seen the work. The separation is what makes it independent: the Claude that built the pipeline cannot objectively audit it.
 
 **The Five Audits:**
 
 | Audit | What It Does |
 |-------|--------------|
-| **Code Audit** | Scrutinizes for coding errors, missing value handling, merge diagnostics, variable construction |
-| **Cross-Language Replication** | Creates replication scripts in 2 other languages (R/Stata/Python), compares results to 6 decimal places |
-| **Directory Audit** | Checks folder structure, relative paths, naming conventions—is this replication-package ready? |
+| **Code Audit** | Coding errors, missing value handling, merge diagnostics, variable construction |
+| **Cross-Language Replication** | Replication scripts in 2 other languages (R/Stata/Python), results compared to 6 decimal places |
+| **Directory Audit** | Folder structure, relative paths, naming conventions — replication-package ready? |
 | **Output Automation Audit** | Are tables and figures programmatically generated or manually created? |
-| **Econometrics Audit** | Are specifications coherent? Standard errors correct? Identification plausible? |
+| **Econometrics Audit** | Identification strategy, standard errors, fixed effects, parallel trends, first stage |
 
-**Critical Rule:** Referee 2 NEVER modifies author code. It only creates its own replication scripts. The author is the only one who modifies the author's code. This separation ensures the audit is truly independent.
+**Critical Rule:** Referee 2 NEVER modifies author code. It only creates its own replication scripts. Only the author modifies the author's code.
 
-### 2. The Rhetoric of Decks
+*Referee 2 is one of two complementary audit tools. See below.*
+
+---
+
+### 2. Blindspot (Make the Stone Stony Again)
+
+**Location:** [`skills/blindspot/`](skills/blindspot/) | `.claude/skills/blindspot/SKILL.md` (actual skill)
+
+Blindspot is a **peripheral vision audit for empirical output** — a structured protocol for finding what the author cannot see. Problems hiding in plain sight (**vices**) and opportunities being overlooked (**virtues**).
+
+**The Shklovsky principle:** Viktor Shklovsky, the Soviet literary theorist, argued that art exists to restore perception. A man who walks barefoot up a mountain eventually cannot feel his feet. Art exists to make the stone stony again. Research has the same problem: by the time you've spent months on a paper, the main finding has collapsed your attention, and everything else — the spike at t=1, the missing subgroup, the heterogeneity richer than the average — has become invisible.
+
+Blindspot makes the stone stony again.
+
+**The Blindspot Grid — four quadrants, two vices and two virtues:**
+
+|  | What's there but unseen | What's absent but unnoticed |
+|---|---|---|
+| **Problems** | **Vice 1: The Unexplained Feature** — a spike, a sign flip, a sample-size drop nobody asked about | **Vice 2: The Convenient Absence** — a robustness check never run, a subgroup never examined, a dog that didn't bark |
+| **Opportunities** | **Virtue 1: The Unasked Question** — heterogeneity richer than the average, a mechanism visible in the data but absent from the hypothesis | **Virtue 2: The Unexploited Strength** — an identification argument stronger than the paper claims, a falsification test that would crush the main objection |
+
+**Ruling:** CLEAR / CONDITIONAL / HOLD
+
+**Usage:** `/blindspot path/to/figure-or-table "what I think the main finding is"`
+
+Read the full documentation: [`skills/blindspot/README.md`](skills/blindspot/README.md)
+
+---
+
+### Referee 2 and Blindspot: Complements, Not Substitutes
+
+These two tools address different failure modes at different stages of the research process. **Both should be run. Neither replaces the other.**
+
+| | Referee 2 | Blindspot |
+|---|---|---|
+| **Core question** | *Is this implemented correctly?* | *Can you see what's in front of you?* |
+| **Failure mode it catches** | Coding errors, bad merges, wrong SEs, non-replicating results | Overlooked problems (vices) and overlooked opportunities (virtues) |
+| **When it runs** | After the project is complete | When output first appears, before writing begins |
+| **Session** | Fresh terminal — independence is structural | Same session — you need the person closest to the work |
+| **Persona** | Health inspector with a checklist | Shklovsky — restoring perception |
+| **Would have caught a merge error?** | Yes | Maybe |
+| **Would have caught the t=1 spike?** | No | Yes |
+
+**Why separate sessions for Referee 2 but not Blindspot?**
+
+Referee 2 needs a fresh session because it's auditing *implementation* — the Claude that built the code will rationalize its own choices. True independence requires structural separation.
+
+Blindspot doesn't need separation because it's auditing *perception* — your own understanding of output you produced. You're the right person to do that, with a structured forcing function to look past what you expect to see.
+
+**The workflow:**
+1. Produce output → `/blindspot` → interpret and write
+2. Complete project → open fresh terminal → `/referee2`
+
+---
+
+### 3. The Rhetoric of Decks
 
 **Location:** `presentations/`
 
@@ -83,18 +138,44 @@ My philosophy of slide design, plus a tested prompt for generating Beamer presen
 
 ### 3. Split-PDF Skill (Download, Split, and Deep-Read Papers)
 
-**Location:** [`skills/`](skills/) (human-readable guide) | `.claude/skills/split-pdf/SKILL.md` (actual skill)
+**Location:** [`skills/split-pdf/`](skills/split-pdf/) (human-readable guide) | `.claude/skills/split-pdf/SKILL.md` (actual skill)
 
 A Claude Code **skill** — an invocable `/split-pdf` command that automates the full pipeline for reading academic papers:
 
-1. **Download** the PDF (web search + download, or use a local file)
-2. **Split** into 4-page chunks via PyPDF2
-3. **Read** 3 chunks at a time (~12 pages), pausing between batches
-4. **Write** structured reading notes with detailed extraction
+1. **Acquire** the PDF (web search + download, or use a local file in place)
+2. **Check** for an existing `_text.md` extract or existing splits — offer to reuse
+3. **Split** into 4-page chunks via PyPDF2, stored in a `_build/` directory
+4. **Read** 3 chunks at a time (~12 pages), pausing between batches
+5. **Extract** structured reading notes across 8 dimensions into `notes.md`
+6. **Persist** the final extraction as `<basename>_text.md` alongside the source PDF
 
 **Why not just read the full PDF?** Long PDFs either crash the session ("prompt too long" — unrecoverable) or produce shallow, hallucinated output. Splitting forces Claude to attend carefully to every section and externalizes understanding into markdown notes incrementally.
 
+**Key features:** In-place PDF handling (no centralized `articles/` folder), persistent `_text.md` extracts (skip re-reading on future invocations), split reuse, and an agent isolation protocol that prevents context bloat when other skills call `/split-pdf`.
+
 **Usage:** Type `/split-pdf path/to/paper.pdf` or `/split-pdf "search query for paper"`
+
+Read the full documentation: [`skills/split-pdf/README.md`](skills/split-pdf/README.md)
+
+### 3b. Beautiful Deck (End-to-End Deck Creation)
+
+**Location:** [`skills/beautiful_deck/`](skills/beautiful_deck/) | `.claude/skills/beautiful_deck/SKILL.md` (actual skill)
+
+A Claude Code **skill** — invoke with `/beautiful_deck` — that runs the full deck-generation pipeline. This is the operational version of the prompt that used to live at `presentations/deck_generation_prompt.md`.
+
+**What the skill enforces:**
+
+- **Audience triage before any slide is written** — commits to a rhetorical balance (ethos / pathos / logos) that fits the audience (academic seminar, teaching lecture, conference talk, working deck, external non-academic)
+- **Original theme, never boilerplate** — a custom `.sty` tuned to the audience. May build on `metropolis`, `moloch`, `focus`, etc. as a foundation, but a reader should not be able to tell what theme package is underneath
+- **Pedagogical movement: Narrative → Application → Picture → Codeblock → Technical** — intuition first, technical last. The anti-pattern is the lecture that opens with definitions and ends with an example "for intuition"
+- **Format flexibility** — Beamer by default. Accepts Quarto, Typst, reveal.js, Marp on explicit user request
+- **Code-first figure generation** — standalone scripts run before `\includegraphics{}` is written
+- **Zero-warning compile loop** — Overfull / Underfull / font / reference warnings all must return zero at every checkpoint, not just the final compile
+- **`/tikz` cleanup** — invoked automatically to catch label collisions and coordinate drift
+- **Rhetoric audit (sub-agent)** — checks titles-as-assertions, one-idea-per-slide, MB/MC balance, narrative arc, Devil's Advocate presence
+- **Graphics audit (sub-agent)** — checks numerical accuracy, label positioning, axis coherence, color consistency, font sizing
+
+**Usage:** `/beautiful_deck [optional content path or description]`
 
 ### 4. Compile Deck (Beamer Presentations with the Rhetoric of Decks)
 
@@ -125,7 +206,32 @@ A Claude Code **command** — invoke with `/compiledeck` — that embeds the ful
 
 **Usage:** Type `/compiledeck` when creating or editing a Beamer deck.
 
-### 5. Additional Commands
+### 5. TikZ Collision Audit
+
+**Location:** [`skills/tikz/`](skills/tikz/) | `.claude/skills/tikz/SKILL.md` (actual skill)
+
+A Claude Code **skill** — invoke with `/tikz path/to/file.tex` — that systematically audits and fixes every visual collision in every TikZ figure in a LaTeX file. Labels sitting on arrows, text inside boxes, arrows crossing each other — found and fixed using measurement, not intuition.
+
+**The problem it solves:** TikZ compiles silently even when labels overlap arrows or text bleeds into box edges. The compiler catches nothing. This skill catches everything.
+
+**How it works:** Six ordered passes, each targeting a specific class of collision:
+
+| Pass | What it checks |
+|------|---------------|
+| Pass 0 | Cross-slide consistency — same diagram on multiple slides must be identical except for deliberate changes |
+| Pass 1 | Bézier curves first — computes max curve depth using `(chord/2) × tan(bend/2)`, checks every label against the danger zone |
+| Pass 2 | Gap calculations — estimates label width in cm, compares against usable space between nodes |
+| Pass 3 | Arrow label keywords — every label must have `above`, `below`, `left`, or `right` |
+| Pass 4 | Boundary rule — labels within 0.4cm of any circle, rectangle, or filled shape are a collision |
+| Pass 5 | Margin check — minimum clearances between all object pairs |
+
+**Most common pattern it catches:** Step labels on flow diagrams that are wider than the arrow between boxes — they look right in code but overlap box text when rendered.
+
+**Full formulas and reference tables:** `compiledeck/tikz_rules.md`
+
+**Usage:** `/tikz path/to/deck.tex`
+
+### 6. Additional Commands
 
 **Location:** `.claude/commands/`
 
@@ -148,11 +254,14 @@ A template for giving Claude persistent memory within a project. Copy it to your
 MixtapeTools/
 ├── README.md                 # You are here
 ├── workflow.md               # How I use Claude Code for research (START HERE)
-├── skills/                   # Human-readable guide to Claude Code skills
+├── skills/                   # Human-readable guides to Claude Code skills
 │   ├── README.md            # What skills are, how to use them, how to install
+│   ├── blindspot/           # Blindspot: peripheral vision audit for output
+│   │   └── README.md        # Full essay, origin story, six steps
 │   ├── split-pdf/           # Documentation and examples for the split-pdf skill
 │   │   └── README.md        # Detailed guide with methodology and examples
-│   └── newproject/          # Documentation for the new-project scaffold skill
+│   ├── newproject/          # Documentation for the new-project scaffold skill
+│   └── tikz/                # Documentation for the TikZ collision audit skill
 │       └── README.md        # Philosophy, folder purposes, installation
 ├── .claude/
 │   ├── commands/             # Slash commands (invoke with /command-name)
@@ -160,6 +269,10 @@ MixtapeTools/
 │   │   ├── compiletex.md    # /compiletex — Compile LaTeX, report errors/warnings
 │   │   └── newproject.md    # /newproject — Scaffold new research project
 │   └── skills/
+│       ├── blindspot/        # Skill: make the stone stony again
+│       │   └── SKILL.md     # Instructions Claude follows (invoke with /blindspot)
+│       ├── tikz/             # Skill: audit and fix TikZ visual collisions
+│       │   └── SKILL.md     # Instructions Claude follows (invoke with /tikz)
 │       ├── split-pdf/        # Skill: download, split, and deep-read PDFs
 │       │   ├── SKILL.md     # Instructions Claude follows
 │       │   └── methodology.md # Why this method works (for humans)
@@ -288,4 +401,4 @@ Use freely. Attribution appreciated but not required.
 
 ---
 
-*Last updated: February 2026*
+*Last updated: March 2026*
